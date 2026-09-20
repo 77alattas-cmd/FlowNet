@@ -1,0 +1,6 @@
+{
+  "name": "FlowNet",
+  "description": "FlowNet advanced network toolkit, proxy server, and connectivity utility",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

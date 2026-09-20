@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- 1. درع الأمان والرقابة الأبوية (Security Shield Outer Glow) -->
+    <path
+        android:pathData="M54,24 L76,33 V52 C76,67 54,79 54,79 C54,79 32,67 32,52 V33 Z"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00E5FF"
+        android:fillAlpha="0.12" />
+
+    <!-- 2. عقد ومسارات تدفق الشبكة والتوجيه (Flow Net Nodes & Connections) -->
+    <!-- مسار التوصيل بين العقد -->
+    <path
+        android:pathData="M44,42 L54,50 L64,42 M54,50 V64"
+        android:strokeColor="#10B981"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- العقد الشبكية النيونية (Network Nodes) -->
+    <!-- العقدة العلوية اليسرى -->
+    <path
+        android:pathData="M44,42m-3.5,0a3.5,3.5 0,1 1,7 0a3.5,3.5 0,1 1,-7 0"
+        android:fillColor="#00E5FF" />
+    
+    <!-- العقدة العلوية اليمنى -->
+    <path
+        android:pathData="M64,42m-3.5,0a3.5,3.5 0,1 1,7 0a3.5,3.5 0,1 1,-7 0"
+        android:fillColor="#00E5FF" />
+
+    <!-- العقدة المركزية P2P -->
+    <path
+        android:pathData="M54,50m-4.5,0a4.5,4.5 0,1 1,9 0a4.5,4.5 0,1 1,-9 0"
+        android:fillColor="#10B981" />
+
+    <!-- العقدة السفلية للتوجيه -->
+    <path
+        android:pathData="M54,64m-3.5,0a3.5,3.5 0,1 1,7 0a3.5,3.5 0,1 1,-7 0"
+        android:fillColor="#00E5FF" />
+
+    <!-- 3. موجات البث وإشارات الواي فاي العلوية (Hotspot Flow Waves) -->
+    <path
+        android:pathData="M42,34 C49,30 59,30 66,34"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+        
+    <path
+        android:pathData="M47,38 C51,36 57,36 61,38"
+        android:strokeColor="#10B981"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+</vector>
