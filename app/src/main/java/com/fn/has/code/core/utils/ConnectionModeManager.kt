@@ -7,7 +7,11 @@ enum class ConnectionType(val title: String, val description: String) {
     PROXY("البروكسي التقليدي", "إعداد يدوي لمنفذ 8080 في الأجهزة المتصلة بدون صلاحيات خاصة."),
     DIRECT_VPN("VPN المباشر (توجيه آلي)", "توجيه البيانات عبر واجهة TUN بدون تعديل البروكسي يدوياً."),
     SHIZUKU("نمط ADB / Shizuku", "تطبيق البروكسي وتجاوز قيود TTL أوتوماتيكياً عبر صلاحيات ADB بدون روت."),
-    ROOT("نمط الروت الكامل (Root SU)", "توجيه شفاف كلياً وتجاوز قيود شبكات التغطية عبر iptables بحرية مطلقة.")
+    ROOT("نمط الروت الكامل (Root SU)", "توجيه شفاف كلياً وتجاوز قيود شبكات التغطية عبر iptables بحرية مطلقة.");
+
+    companion object {
+        val VPN = DIRECT_VPN
+    }
 }
 
 class ConnectionModeManager(private val context: Context) {

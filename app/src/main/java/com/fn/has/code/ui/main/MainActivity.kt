@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             FlowNetTheme {
-                FlowNetApp()
+                MainDashboardScreen()
             }
         }
     }

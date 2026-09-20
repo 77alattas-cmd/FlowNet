@@ -5,11 +5,22 @@ import android.content.SharedPreferences
 import com.fn.has.code.data.local.db.AppDatabase
 import java.security.MessageDigest
 
-class ParentalControlManager(private val context: Context) {
+class ParentalControlManager(
+    private val context: Context? = null,
+    private val database: AppDatabase? = null,
+    private val sharedPreferences: SharedPreferences? = null
+) {
 
-    private val prefs: SharedPreferences =
-        context.getSharedPreferences("flownet_parental_prefs", Context.MODE_PRIVATE)
-    private val db = AppDatabase.getDatabase(context)
+    private val prefs: SharedPreferences by lazy {
+        sharedPreferences
+            ?: context?.getSharedPreferences("flownet_parental_prefs", Context.MODE_PRIVATE)
+            ?: throw IllegalStateException("Either context or sharedPreferences must be provided")
+    }
+    private val db: AppDatabase by lazy {
+        database
+            ?: (context?.let { AppDatabase.getDatabase(it) }
+                ?: throw IllegalStateException("Database or context must be provided"))
+    }
 
     // القوائم الجاهزة للتصنيفات المحجوبة
     private val adultDomains = setOf(
@@ -78,7 +89,11 @@ class ParentalControlManager(private val context: Context) {
         if (isAdsBlockingEnabled && isMatchInSet(cleanDomain, adMalwareDomains)) return true
 
         // 2. فحص النطاقات المخصصة في قاعدة البيانات
-        val activeCustomDomains = db.blockedDomainDao().getActiveBlockedDomains()
+        val activeCustomDomains = try {
+            db.blockedDomainDao().getActiveBlockedDomains()
+        } catch (e: Exception) {
+            emptyList()
+        }
         for (custom in activeCustomDomains) {
             val customClean = custom.domain.lowercase().trim('.')
             if (cleanDomain == customClean || cleanDomain.endsWith(".$customClean")) {
