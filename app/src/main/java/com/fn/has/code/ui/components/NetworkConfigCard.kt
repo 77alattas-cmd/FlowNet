@@ -24,6 +24,7 @@ import com.fn.has.code.core.constants.AppConstants
 import com.fn.has.code.core.utils.NetworkSettingsStore
 import com.fn.has.code.core.utils.NetworkUtils
 import com.fn.has.code.core.utils.NumberFormatter
+import com.fn.has.code.core.utils.restartServiceIfActive
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -111,6 +112,7 @@ fun NetworkConfigCard() {
             Button(
                 onClick = {
                     settingsStore.updateSsidAndPassword(ssidSuffixInput, passwordInput)
+                    restartServiceIfActive(context, networkState.isNetworkActive)
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = AppConstants.COLOR_ACCENT_CYAN),
                 modifier = Modifier.fillMaxWidth()
@@ -227,6 +229,7 @@ fun NetworkConfigCard() {
                     val pFile = filePortInput.toIntOrNull() ?: networkState.fileServerPort
                     val pDns = dnsPortInput.toIntOrNull() ?: networkState.dnsPort
                     settingsStore.updatePorts(pProxy, pFile, pDns)
+                    restartServiceIfActive(context, networkState.isNetworkActive)
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = AppConstants.COLOR_ACCENT_CYAN),
                 modifier = Modifier.fillMaxWidth()

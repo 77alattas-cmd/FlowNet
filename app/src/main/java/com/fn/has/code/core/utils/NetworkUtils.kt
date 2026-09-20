@@ -1,12 +1,29 @@
 package com.fn.has.code.core.utils
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.os.Build
+import com.fn.has.code.service.FlowNetCoreService
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
 import java.net.Inet4Address
 import java.net.NetworkInterface
 import java.util.Collections
+
+// دالة مساعدة لتحديث الخدمة النشطة
+fun restartServiceIfActive(context: Context, isActive: Boolean) {
+    if (isActive) {
+        val serviceIntent = Intent(context, FlowNetCoreService::class.java)
+        context.stopService(serviceIntent)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(serviceIntent)
+        } else {
+            context.startService(serviceIntent)
+        }
+    }
+}
 
 object NetworkUtils {
 

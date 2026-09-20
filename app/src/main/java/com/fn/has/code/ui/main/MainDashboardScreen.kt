@@ -433,11 +433,15 @@ fun NetworkAndSharingTab() {
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Button(
-                    onClick = { settingsStore.updateSsidAndPassword(editableSsidSuffix, editablePassword) },
+                    onClick = { 
+                        settingsStore.updateSsidAndPassword(editableSsidSuffix, editablePassword)
+                        // إعادة تطبيق الإعدادات على الخدمة المباشرة
+                        restartServiceIfActive(context, networkState.isNetworkActive)
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = AppConstants.COLOR_ACCENT_CYAN),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = "حفظ بيانات الشبكة", color = Color.Black, fontWeight = FontWeight.Bold)
+                    Text(text = "حفظ بيانات الشبكة وتطبيقها", color = Color.Black, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -483,6 +487,7 @@ fun NetworkAndSharingTab() {
                         val pFile = editableFilePort.toIntOrNull() ?: networkState.fileServerPort
                         val pDns = editableDnsPort.toIntOrNull() ?: networkState.dnsPort
                         settingsStore.updatePorts(pProxy, pFile, pDns)
+                        restartServiceIfActive(context, networkState.isNetworkActive)
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = AppConstants.COLOR_ACCENT_CYAN),
                     modifier = Modifier.fillMaxWidth()
