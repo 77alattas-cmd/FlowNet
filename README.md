@@ -68,16 +68,16 @@ app/src/main/java/com/fn/has/code/
 
 ---
 
-## 🛠️ التشغيل والبناء (Build & Run)
+## 🚀 البناء والتشغيل
 
-1. استنساخ المشروع:
-   ```bash
-   git clone <repo_url>
-   ```
-2. فتح المشروع باستخدام **Android Studio Ladybug (أو أحدث)**.
-3. التأكد من تثبيت **JDK 17**.
-4. تشغيل الاختبارات:
-   ```bash
-   ./gradlew testDebugUnitTest
-   ```
-5. بناء وتشغيل التطبيق على الجهاز أو المحاكي عبر زر **Run** (أو `./gradlew assembleDebug`).
+### المتطلبات
+- Android Studio **Ladybug** أو أحدث
+- JDK **17**
+- Android SDK **API 26+**
+
+### الخطوات
+```bash
+git clone https://github.com/77alattas-cmd/FlowNet.git
+cd FlowNet
+./gradlew assembleDebug
+```
