@@ -14,6 +14,9 @@ interface FlowNetDao {
     @Query("SELECT * FROM captive_logs ORDER BY timestamp DESC")
     fun getAllCaptiveLogs(): Flow<List<CaptiveLogEntity>>
 
+    @Query("SELECT * FROM captive_logs ORDER BY timestamp DESC")
+    fun observeCaptiveLogs(): Flow<List<CaptiveLogEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCaptiveLog(log: CaptiveLogEntity)
 

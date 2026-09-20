@@ -32,3 +32,5 @@ abstract class FlowNetDatabase : RoomDatabase() {
         }
     }
 }
+
+typealias FlowNetDao = com.fn.has.code.data.local.db.dao.FlowNetDao

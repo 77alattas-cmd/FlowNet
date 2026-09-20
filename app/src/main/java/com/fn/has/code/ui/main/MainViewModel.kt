@@ -1,33 +1,66 @@
 package com.fn.has.code.ui.main
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fn.has.code.FlowNetApplication
+import com.fn.has.code.data.local.db.FlowNetDao
 import com.fn.has.code.data.local.db.entity.CaptiveLogEntity
 import com.fn.has.code.data.local.db.entity.NetworkLogEntity
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import com.fn.has.code.server.LocalProxyServer
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+data class MainUiState(
+    val isServiceRunning: Boolean = false,
+    val isProxyRunning: Boolean = false,
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null
+)
 
-    private val dao = (application as FlowNetApplication).database.flowNetDao()
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val dao: FlowNetDao,
+    private val proxyServer: LocalProxyServer
+) : ViewModel() {
 
-    val captiveLogs: StateFlow<List<CaptiveLogEntity>> = dao.getAllCaptiveLogs()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+    private val _uiState = MutableStateFlow(MainUiState())
+    val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
-    val networkLogs: StateFlow<List<NetworkLogEntity>> = dao.getAllNetworkLogs()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+    val captiveLogs: StateFlow<List<CaptiveLogEntity>> = dao.observeCaptiveLogs().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList()
+    )
+
+    val networkLogs: StateFlow<List<NetworkLogEntity>> = dao.getAllNetworkLogs().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList()
+    )
+
+    fun toggleService() = viewModelScope.launch {
+        _uiState.update { it.copy(isLoading = true) }
+        try {
+            if (_uiState.value.isServiceRunning) {
+                // stop logic
+                _uiState.update { it.copy(isServiceRunning = false, isLoading = false) }
+            } else {
+                // start logic
+                _uiState.update { it.copy(isServiceRunning = true, isLoading = false) }
+            }
+        } catch (e: Exception) {
+            _uiState.update { it.copy(errorMessage = e.message, isLoading = false) }
+        }
+    }
+
+    fun toggleProxy(port: Int = 8080) = viewModelScope.launch {
+        if (proxyServer.isRunning) {
+            proxyServer.stop()
+            _uiState.update { it.copy(isProxyRunning = false) }
+        } else {
+            proxyServer.start(port)
+            _uiState.update { it.copy(isProxyRunning = true) }
+        }
+    }
+
+    fun clearError() = _uiState.update { it.copy(errorMessage = null) }
 
     fun addNetworkLog(title: String, description: String, type: String = "INFO") {
         viewModelScope.launch {
@@ -51,5 +84,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             dao.clearNetworkLogs()
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        proxyServer.stop()
     }
 }

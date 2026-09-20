@@ -1,63 +1,54 @@
 package com.fn.has.code.server
 
-import java.io.InputStream
-import java.io.OutputStream
+import com.fn.has.code.core.security.SecureCredentialsStore
+import kotlinx.coroutines.*
 import java.net.ServerSocket
 import java.net.Socket
-import kotlin.concurrent.thread
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class LocalProxyServer(private val port: Int) {
+@Singleton
+class LocalProxyServer @Inject constructor(
+    private val credentials: SecureCredentialsStore
+) {
+    private var serverJob: Job? = null
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    private var serverSocket: ServerSocket? = null
-    private var isRunning = false
+    @Volatile
+    var isRunning: Boolean = false
+        private set
 
-    fun start() {
+    fun start(port: Int = 8080) {
         if (isRunning) return
         isRunning = true
 
-        thread(start = true, name = "LocalProxyThread") {
+        serverJob = scope.launch {
             try {
-                serverSocket = ServerSocket(port)
-                while (isRunning) {
-                    val clientSocket = serverSocket?.accept() ?: break
-                    handleProxyConnection(clientSocket)
+                ServerSocket(port).use { server ->
+                    while (isActive) {
+                        val client = server.accept()
+                        launch { handleClient(client) }
+                    }
                 }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-
-    private fun handleProxyConnection(clientSocket: Socket) {
-        thread {
-            try {
-                val clientIn = clientSocket.getInputStream()
-                val clientOut = clientSocket.getOutputStream()
-
-                // Tunneling basics (Pass-through traffic logic)
-                val buffer = ByteArray(8192)
-                var bytesRead = clientIn.read(buffer)
-
-                while (isRunning && bytesRead != -1) {
-                    clientOut.write(buffer, 0, bytesRead)
-                    clientOut.flush()
-                    bytesRead = clientIn.read(buffer)
-                }
-            } catch (e: Exception) {
-                // Connection closed or interrupted
-            } finally {
-                clientSocket.close()
+                isRunning = false
             }
         }
     }
 
     fun stop() {
         isRunning = false
-        try {
-            serverSocket?.close()
-            serverSocket = null
-        } catch (e: Exception) {
-            e.printStackTrace()
+        serverJob?.cancel()
+        serverJob = null
+    }
+
+    private suspend fun handleClient(client: Socket) = withContext(Dispatchers.IO) {
+        client.use { sock ->
+            val input = sock.getInputStream().bufferedReader()
+            val requestLine = input.readLine() ?: return@withContext
+            // … منطق البروكسي (Basic Auth + تمرير الطلب)
         }
     }
 }

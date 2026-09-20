@@ -47,12 +47,26 @@ private val WarningOrange = Color(0xFFED8936)
 private val DangerRed = Color(0xFFE53E3E)
 
 @Composable
-fun MainDashboardScreen(viewModel: MainViewModel = viewModel()) {
+fun MainDashboardScreen(
+    viewModel: MainViewModel = run {
+        val context = androidx.compose.ui.platform.LocalContext.current.applicationContext as com.fn.has.code.FlowNetApplication
+        viewModel(
+            factory = object : androidx.lifecycle.ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                    val credentials = com.fn.has.code.core.security.SecureCredentialsStore(context)
+                    val proxyServer = com.fn.has.code.server.LocalProxyServer(credentials)
+                    return MainViewModel(context.database.flowNetDao(), proxyServer) as T
+                }
+            }
+        )
+    }
+) {
     FlowNetOrganizedAppScreen(viewModel = viewModel)
 }
 
 @Composable
-fun FlowNetOrganizedAppScreen(viewModel: MainViewModel = viewModel()) {
+fun FlowNetOrganizedAppScreen(viewModel: MainViewModel) {
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
     var logSubTab by rememberSaveable { mutableIntStateOf(0) }
 
